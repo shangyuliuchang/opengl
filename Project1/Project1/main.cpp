@@ -8,15 +8,18 @@ void display() {
 	/* draw scene */
    //glutWireTeapot(.5); 
    /* flush drawing routines to the window */
-	float x, y, z, angle;
+	float x = 0, y = 0, z, angle;
 	//glPushMatrix();
 	//glTranslatef(300,200,0);
 	glColor3f(1, 1, 1);
-	glBegin(GL_POINTS);
-	for (angle = 0.0; angle < 2 * PI; angle += 0.01)
+	glBegin(GL_LINES);
+	glVertex2f(x, y);
+	int n = 100;
+	for (angle = 0.0; angle < n * PI; angle += 0.01)
 	{
-		x = 1 * sin(angle);
-		y = 1 * cos(angle);
+		x = angle * sin(angle) / n / PI;
+		y = angle * cos(angle) / n / PI;
+		glVertex2f(x, y);
 		glVertex2f(x, y);
 	}
 	glEnd();
