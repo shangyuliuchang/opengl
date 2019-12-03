@@ -50,13 +50,19 @@ public:
 };
 class car {
 public:
-	float x, y, angle, type;
+	float x, y, angle, type, v;
 	float width = 0.1, length = 0.2;
+	int dir, state, position, out;
 	car(int type_) {
 		x = -0.8;
 		y = -1.1;
 		angle = PI / 2;
 		type = type_;
+		v = 0.005f;
+		dir = 0;
+		state = 0;
+		position = 0;
+		out = 0;
 	}
 	void display() {
 		if (type == 0) {
@@ -69,21 +75,100 @@ public:
 		}
 	}
 	void move() {
-		y += 0.001f*sin(angle);
-		x += 0.001f*cos(angle);
+		y += v * sin(angle);
+		x += v * cos(angle);
+
+		if (dir == 0 && state == 0 && y > -0.5f && y < -0.49f) {
+			state = 2;
+		}
+		if (dir == 3 && state == 0 && x > 0.7f && x < 0.71f) {
+			state = 1;
+		}
+		if (dir == 0 && state == 0 && y > 0.3f && y < 0.31f) {
+			state = 1;
+		}
+		if (dir == 1 && state == 0 && x<-0.7f && x>-0.71f) {
+			state = 2;
+		}
+		if (dir == 2 && state == 0 && y <= 0.5f && y >= 0.49f) {
+			state = 2;
+		}
+
+		if (y > 1.1f) {
+			v = 0;
+		}
+		if (dir == 2 && state == 0 && y <= -0.8f) {
+			v = 0;
+			if (out == 1) {
+				v = 0.005f;
+				dir = 0;
+				state = 0;
+				angle = PI / 2;
+			}
+		}
+		if (dir == 0 && state == 0 && y >= 0.8f && x > -0.6f) {
+			v = 0;
+			if (out == 1) {
+				v = 0.005f;
+				dir = 2;
+				state = 0;
+				angle = 3.0f / 2.0f * PI;
+			}
+		}
+
+		if ((state == 1 || state == 2) && fabs((angle)-((dir - state * 2 + 4) % 4)*PI / 2) <= 0.1f) {
+			dir = (dir - state * 2 + 7) % 4;
+			state = 0;
+			angle = ((dir + 1) % 4)*PI / 2;
+		}
+		
+		if (state == 2) {
+			angle -= 0.05f;
+		}
+		if (state == 1) {
+			angle += 0.05f;
+		}
+
+		if (out==0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f) {
+			dir = 1;
+			state = 1;
+			angle = (angle + PI);
+			if (angle >= 2 * PI) {
+				angle -= PI * 2;
+			}
+		}
+		if (out==0 && position >= 6 && dir == 1 && state == 0 && x >= 0.39f - (position - 6) * 0.2f && x <= 0.4f - (position - 6) * 0.2f) {
+			dir = 3;
+			state = 1;
+			angle = (angle + PI);
+			if (angle >= 2 * PI) {
+				angle -= PI * 2;
+			}
+		}
 	}
 };
-car firstcar(0);
+car* cars[12];
 void display(void) {
+	static float time = 0;
 	glClear(GL_COLOR_BUFFER_BIT);
-	firstcar.display();
-	firstcar.move();
+	for (int i = 0; i < time && i < 12; i++) {
+		cars[i]->position = i;
+		cars[i]->display();
+		cars[i]->move();
+	}
+	for (int i = 0; i < time - 3 && i < 15; i++) {
+		cars[i]->out = 1;
+	}
 	parking::draw();
 	glutSwapBuffers();
 	Sleep(10);
+	time += 0.002;
 }
 
 int main(int argc, char *argv[]) {
+	for (int i = 0; i < 12; i++) {
+		cars[i] = new car(0);
+	}
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
