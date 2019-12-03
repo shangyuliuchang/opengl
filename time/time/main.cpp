@@ -4,7 +4,7 @@ float *funx, *funy;
 int n;
 void display() {
 	glBegin(GL_LINES);
-	glColor3f(1,1,1);
+	glColor4f(1,1,1,1);
 	glVertex2f(funx[0], funy[0]);
 	for (int i = 0; i < n; i++) {
 		glVertex2f(funx[i], funy[i]);
@@ -14,13 +14,13 @@ void display() {
 	glFlush();
 }
 float f(float x) {
-	return (x*sin(1/x));
+	return (sin(1 / x)*log(fabs(x)+0.1)/3);
 }
 void calculate(float* x, float*y, int* number, float begin, float end) {
 	float n = 3.0f;
 	float delta = (end - begin) / n;
 	for (float mid = begin + delta; mid <= end - delta; mid++) {
-		if (fabs((f(begin)*(end - mid) + f(end)*(mid - begin)) / (end - begin) - f(mid)) > 0.00001f && (*number) < 99999) {
+		if (fabs((f(begin)*(end - mid) + f(end)*(mid - begin)) / (end - begin) - f(mid)) > 0.00001f && (*number) < 99999 && (end-begin)>0.0001f) {
 			x[*number] = mid;
 			y[*number] = f(mid);
 			(*number)++;
@@ -47,7 +47,7 @@ void rerange(float* x, float* y, int n) {
 int main(int argc, char *argv[]) {
 	int number = 0;
 	float x[100000], y[100000];
-	x[0] = -0.999f;
+	x[0] = -1.0f;
 	x[1] = 1.0f;
 	y[0] = f(x[0]);
 	y[1] = f(x[1]);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_RGB);
-	glutCreateWindow("hello, teapot!");
+	glutCreateWindow("the Graph of Function!");
 	glClearColor(0, 0, 0, 1);
 	glutDisplayFunc(&display);
 	glutMainLoop();
