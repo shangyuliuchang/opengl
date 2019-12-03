@@ -2,19 +2,24 @@
 #include<math.h>
 #include<Windows.h>
 
+#define PI 3.1415926535
+
 struct recData
 {
-	float x1, y1, x2, y2, x3, y3, x4, y4;
+	int number;
+	float x[100], y[100];
 };
 
 class draw {
 public:
-	static void rec(recData* data) {
+	static void drawlines(recData* data) {
 		glBegin(GL_LINES);
-		glVertex2f(data->x1, data->y1);glVertex2f(data->x2, data->y2);
-		glVertex2f(data->x2, data->y2);glVertex2f(data->x3, data->y3);
-		glVertex2f(data->x3, data->y3);glVertex2f(data->x4, data->y4);
-		glVertex2f(data->x4, data->y4);glVertex2f(data->x1, data->y1);
+		for (int i = 0; i < data->number - 1; i++) {
+			glVertex2f(data->x[i], data->y[i]);
+			glVertex2f(data->x[i+1], data->y[i+1]);
+		}
+		glVertex2f(data->x[0], data->y[0]);
+		glVertex2f(data->x[data->number-1], data->y[data->number - 1]);
 		glEnd();
 	}
 	static void transform(float x, float y, float angle, float orix, float oriy, float* truex, float* truey) {
@@ -22,32 +27,58 @@ public:
 		*truey = y + oriy * cos(angle) + orix * sin(angle);
 	}
 };
-
+class parking {
+public:
+	static void draw() {
+		glBegin(GL_LINES);
+		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
+			glVertex2f(x, -1.0f);
+			glVertex2f(x, -0.6f);
+		}
+		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
+			glVertex2f(x, 1.0f);
+			glVertex2f(x, 0.6f);
+		}
+		glEnd();
+		recData cen;
+		cen.x[0] = -0.6f; cen.y[0] = -0.2f;
+		cen.x[1] = 0.6f; cen.y[1] = -0.2f;
+		cen.x[2] = 0.6f; cen.y[2] = 0.2f;
+		cen.x[3] = -0.6f; cen.y[3] = 0.2f;
+		draw::drawlines(&cen);
+	}
+};
 class car {
 public:
 	float x, y, angle, type;
-	float width = 0.05, length = 0.1;
+	float width = 0.1, length = 0.2;
 	car(int type_) {
-		x = y = angle = 0;
+		x = -0.8;
+		y = -1.1;
+		angle = PI / 2;
 		type = type_;
 	}
 	void display() {
 		if (type == 0) {
 			recData recD;
-			draw::transform(x, y, angle, length / 2, width / 2, &recD.x1, &recD.y1);
-			draw::transform(x, y, angle, length / -2, width / 2, &recD.x2, &recD.y2);
-			draw::transform(x, y, angle, length / -2, width / -2, &recD.x3, &recD.y3);
-			draw::transform(x, y, angle, length / 2, width / -2, &recD.x4, &recD.y4);
-			draw::rec(&recD);
+			recD.number = 4;
+			for (int i = 0; i < 4; i++) {
+				draw::transform(x, y, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
+			}
+			draw::drawlines(&recD);
 		}
+	}
+	void move() {
+		y += 0.001f*sin(angle);
+		x += 0.001f*cos(angle);
 	}
 };
 car firstcar(0);
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	firstcar.display();
-	firstcar.angle += 0.01f;
-	firstcar.x += 0.001f;
+	firstcar.move();
+	parking::draw();
 	glutSwapBuffers();
 	Sleep(10);
 }
