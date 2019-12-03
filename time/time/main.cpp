@@ -17,7 +17,7 @@ float f(float x) {
 	return (sin(1 / x)*log(fabs(x)+0.1)/3);
 }
 void calculate(float* x, float*y, int* number, float begin, float end) {
-	float n = 3.0f;
+	float n = 5.0f;
 	float delta = (end - begin) / n;
 	for (float mid = begin + delta; mid <= end - delta; mid++) {
 		if (fabs((f(begin)*(end - mid) + f(end)*(mid - begin)) / (end - begin) - f(mid)) > 0.00001f && (*number) < 99999 && (end-begin)>0.0001f) {
