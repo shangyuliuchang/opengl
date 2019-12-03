@@ -11,15 +11,15 @@ class draw {
 public:
 	static void rec(recData* data) {
 		glBegin(GL_LINES);
-		glVertex2f(data->x1, data->y1);
-		glVertex2f(data->x2, data->y2);
-		glVertex2f(data->x2, data->y2);
-		glVertex2f(data->x3, data->y3);
-		glVertex2f(data->x3, data->y3);
-		glVertex2f(data->x4, data->y4);
-		glVertex2f(data->x4, data->y4);
-		glVertex2f(data->x1, data->y1);
+		glVertex2f(data->x1, data->y1);glVertex2f(data->x2, data->y2);
+		glVertex2f(data->x2, data->y2);glVertex2f(data->x3, data->y3);
+		glVertex2f(data->x3, data->y3);glVertex2f(data->x4, data->y4);
+		glVertex2f(data->x4, data->y4);glVertex2f(data->x1, data->y1);
 		glEnd();
+	}
+	static void transform(float x, float y, float angle, float orix, float oriy, float* truex, float* truey) {
+		*truex = x - oriy * sin(angle) + orix * cos(angle);
+		*truey = y + oriy * cos(angle) + orix * sin(angle);
 	}
 };
 
@@ -34,14 +34,10 @@ public:
 	void display() {
 		if (type == 0) {
 			recData recD;
-			recD.x1 = x + sin(angle)*width + cos(angle)*length;
-			recD.x2 = x - sin(angle)*width + cos(angle)*length;
-			recD.x3 = x - sin(angle)*width - cos(angle)*length;
-			recD.x4 = x + sin(angle)*width - cos(angle)*length;
-			recD.y1 = y + cos(angle)*width + sin(angle)*length;
-			recD.y2 = y - cos(angle)*width + sin(angle)*length;
-			recD.y3 = y - cos(angle)*width - sin(angle)*length;
-			recD.y4 = y + cos(angle)*width - sin(angle)*length;
+			draw::transform(x, y, angle, length / 2, width / 2, &recD.x1, &recD.y1);
+			draw::transform(x, y, angle, length / -2, width / 2, &recD.x2, &recD.y2);
+			draw::transform(x, y, angle, length / -2, width / -2, &recD.x3, &recD.y3);
+			draw::transform(x, y, angle, length / 2, width / -2, &recD.x4, &recD.y4);
 			draw::rec(&recD);
 		}
 	}
@@ -50,7 +46,10 @@ car firstcar(0);
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	firstcar.display();
+	firstcar.angle += 0.01f;
+	firstcar.x += 0.001f;
 	glutSwapBuffers();
+	Sleep(10);
 }
 
 int main(int argc, char *argv[]) {
