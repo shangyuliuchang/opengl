@@ -1,20 +1,25 @@
 #include<GL/freeglut.h>
 #include<math.h>
+#include<Windows.h>
 float *funx, *funy;
 int n;
+float parameter = 1;
 void display() {
+	glClear(GL_COLOR_BUFFER_BIT);
 	glBegin(GL_LINES);
-	glColor4f(1,1,1,1);
-	glVertex2f(funx[0], funy[0]);
+	glColor4f(1, 1, 1, 1);
+	glVertex2f(funx[0] * parameter, funy[0] * parameter);
 	for (int i = 0; i < n; i++) {
-		glVertex2f(funx[i], funy[i]);
-		glVertex2f(funx[i], funy[i]);
+		glVertex2f(funx[i]*parameter, funy[i]*parameter);
+		glVertex2f(funx[i]*parameter, funy[i]*parameter);
 	}
 	glEnd();
-	glFlush();
+	glutSwapBuffers();
+	parameter *= 1.001;
+	Sleep(10);
 }
 float f(float x) {
-	return (sin(1 / x)*log(fabs(x)+0.1)/3);
+	return (sin(1 / x)*fabs(x));
 }
 void calculate(float* x, float*y, int* number, float begin, float end) {
 	float n = 5.0f;
@@ -60,10 +65,10 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
-	glutInitDisplayMode(GLUT_RGB);
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
 	glutCreateWindow("the Graph of Function!");
 	glClearColor(0, 0, 0, 1);
-	glutDisplayFunc(&display);
+	glutIdleFunc(&display);
 	glutMainLoop();
 	return 0;
 }
