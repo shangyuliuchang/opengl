@@ -17,14 +17,13 @@ public:
 	static void drawlines(recData* data) {
 		glColor4f(data->r, data->g, data->b, 1);
 		glBegin(GL_POLYGON);
-		for (int i = 0; i < data->number; i++) {
+		for (int i = 0; i < data->number; i++)
 			glVertex2f(data->x[i], data->y[i]);
-		}
 		glEnd();
 	}
-	static void transform(float x, float y, float angle, float orix, float oriy, float* truex, float* truey) {
-		*truex = x - oriy * sin(angle) + orix * cos(angle);
-		*truey = y + oriy * cos(angle) + orix * sin(angle);
+	static void transform(float x, float y, float ancx, float ancy, float angle, float orix, float oriy, float* truex, float* truey) {
+		*truex = x - (oriy - ancy) * sin(angle) + (orix - ancx) * cos(angle);
+		*truey = y + (oriy - ancy) * cos(angle) + (orix - ancx) * sin(angle);
 	}
 };
 class parking {
@@ -69,14 +68,10 @@ public:
 		reverse = 0;
 	}
 	static void generate(car** cars, int n) {
-		for (int i = 0; i < n; i++) {
-			cars[i] = new car(0);
-		}
+		for (int i = 0; i < n; i++) cars[i] = new car(0);
 	}
 	static void deletecars(car** cars, int n) {
-		for (int i = 0; i < n; i++) {
-			delete cars[i];
-		}
+		for (int i = 0; i < n; i++) delete cars[i];
 	}
 	void goout() {
 		out = 1;
@@ -85,51 +80,38 @@ public:
 		if (type == 0) {
 			recData recD;
 			recD.number = 4;
-			for (int i = 0; i < 4; i++) {
-				draw::transform(x, y, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1) + length / 8.0f, width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
-			}
+			for (int i = 0; i < 4; i++)
+				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
 			recD.r = recD.g = recD.b = 1;
 			draw::drawlines(&recD);
 		}
 	}
 	void move(car** cars, int n, int no) {
 		float dx, dy, distance;
+		float x_1, y_1, x_2, y_2;
 		v = 0.005f;
-		if (reverse == 1) {
-			v *= -1;
-		}
+		if (reverse == 1) v *= -1;
 		for (int i = 0; i < n; i++) {
 			if (i != no) {
-				dx = cars[no]->x - cars[i]->x;
-				dy = cars[no]->y - cars[i]->y;
+				draw::transform(cars[no]->x, cars[no]->y, 0, 0, angle, 0, 0, &x_1, &y_1);
+				draw::transform(cars[i]->x, cars[i]->y, 0, 0, angle, 0, 0, &x_2, &y_2);
+				dx = x_1 - x_2;
+				dy = y_1 - y_2;
 				distance = sqrt(dx * dx + dy * dy);
-				if (distance < 0.3) {
-					if (reverse == 0)v += (0.3f - distance) / 5.0f / distance * (dx*cos(angle) + dy * sin(angle));
-				}
+				if (distance < 0.3) 
+					if (reverse == 0) v += (0.3f - distance) / 5.0f / distance * (dx*cos(angle) + dy * sin(angle));
 			}
 		}
 		if (v > 0.005f)v = 0.005f;
 		if (v < -0.005f)v = -0.005f;
 
-		if (dir == 0 && state == 0 && y > -0.5f && y < -0.49f && reverse == 0) {
-			state = 2;
-		}
-		if (dir == 2 && state == 0 && y <= 0.5f && y >= 0.49f && reverse == 0) {
-			state = 2;
-		}
-		if (dir == 3 && state == 0 && x > 0.7f && x < 0.71f) {
-			state = 1;
-		}
-		if (dir == 0 && state == 0 && y > 0.3f && y < 0.31f) {
-			state = 1;
-		}
-		if (dir == 1 && state == 0 && x < -0.7f && x > -0.71f) { 
-			state = 2;
-		}
+		if (dir == 0 && state == 0 && y > -0.5f && y < -0.49f && reverse == 0) state = 2;
+		if (dir == 2 && state == 0 && y <= 0.5f && y >= 0.49f && reverse == 0) state = 2;
+		if (dir == 3 && state == 0 && x > 0.7f && x < 0.71f) state = 1;
+		if (dir == 0 && state == 0 && y > 0.3f && y < 0.31f) state = 1;
+		if (dir == 1 && state == 0 && x < -0.7f && x > -0.71f) state = 2;
 
-		if (y > 50.0f) {
-			v = 0;
-		}
+		if (y > 50.0f) v = 0;
 
 		if (dir == 0 && state == 0 && y <= -0.8f && reverse == 1) {
 			v = 0;
@@ -165,18 +147,10 @@ public:
 		y += v * sin(angle);
 		x += v * cos(angle);
 
-		if (state == 2) {
-			angle -= v * 10;
-		}
-		if (state == 1) {
-			angle += v * 10;
-		}
-		if (angle >= 2 * PI) {
-			angle -= 2 * PI;
-		}
-		if (angle < 0) {
-			angle += 2 * PI;
-		}
+		if (state == 2) angle -= v * 10;
+		if (state == 1) angle += v * 10;
+		if (angle >= 2 * PI) angle -= 2 * PI;
+		if (angle < 0) angle += 2 * PI;
 	}
 };
 car* cars[2000];
@@ -198,15 +172,8 @@ void mousecallback(int a, int b, int c, int d) {
 	int no;
 	if (b == 1) {
 		no = (int)((mousex - 200) / 100);
-		if (mousey < 200) {
-			no = 11 - no;
-		}
-		else if (mousey > 800) {
-
-		}
-		else {
-			no = -1;
-		}
+		if (mousey < 200) no = 11 - no;
+		else if(mousey>=200 && mousey<=800) no = -1;
 		if (no >= 0) {
 			if (occupation[no] == 0) {
 				occupation[no] = 1;
