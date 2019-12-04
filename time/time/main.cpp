@@ -174,7 +174,6 @@ public:
 car* cars[2000];
 int totalnumber = 1;
 void display(void) {
-	static float time = 0;
 	glClear(GL_COLOR_BUFFER_BIT);
 	for (int i = 0; i < totalnumber; i++) {
 		cars[i]->display();
@@ -183,7 +182,6 @@ void display(void) {
 	parking::draw();
 	glutSwapBuffers();
 	Sleep(10);
-	time += 0.002;
 }
 int mousex, mousey;
 void mousecallback(int a, int b, int c, int d) {
