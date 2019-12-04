@@ -83,6 +83,7 @@ public:
 			recData recD;
 			recD.number = 4;
 			recD.r = recD.g = recD.b = 1;
+			/*
 			for (int i = 0; i < 4; i++) {
 				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
 				recD.z[i] = 0;
@@ -101,7 +102,57 @@ public:
 				recD.z[0] = recD.z[3] = 0;
 				recD.z[1] = recD.z[2] = 0.1f;
 				draw::drawlines(&recD);
+			}*/
+			for (int i = 0; i < 4; i++) {
+				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
+				recD.z[i] = 0;
 			}
+			draw::drawlines(&recD);
+
+			for (int i = 0; i < 4; i++) {
+				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 0 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
+				recD.z[i] = 0.1f;
+			}
+			draw::drawlines(&recD);
+
+			recD.number = 5;
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[0], &recD.y[0]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[1], &recD.y[1]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[2], &recD.y[2]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[3], &recD.y[3]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * -1, &recD.x[4], &recD.y[4]);
+			recD.z[0] = 0.05f; recD.z[1] = 0;  recD.z[2] = 0; recD.z[3] = recD.z[4] = 0.1f;
+			draw::drawlines(&recD);
+
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[0], &recD.y[0]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[1], &recD.y[1]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[2], &recD.y[2]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[3], &recD.y[3]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * 1, &recD.x[4], &recD.y[4]);
+			recD.z[0] = 0.05f; recD.z[1] = 0;  recD.z[2] = 0; recD.z[3] = recD.z[4] = 0.1f;
+			draw::drawlines(&recD);
+
+			recD.number = 4;
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[0], &recD.y[0]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[1], &recD.y[1]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[2], &recD.y[2]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[3], &recD.y[3]);
+			recD.z[0] = 0; recD.z[1] = 0;  recD.z[2] = 0.05f; recD.z[3] = 0.05f;
+			draw::drawlines(&recD);
+
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[0], &recD.y[0]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[1], &recD.y[1]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[2], &recD.y[2]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[3], &recD.y[3]);
+			recD.z[0] = 0; recD.z[1] = 0;  recD.z[2] = 0.1f; recD.z[3] = 0.1f;
+			draw::drawlines(&recD);
+
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[0], &recD.y[0]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * 1, &recD.x[1], &recD.y[1]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * -1, &recD.x[2], &recD.y[2]);
+			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[3], &recD.y[3]);
+			recD.z[0] = 0.05f; recD.z[1] = 0.1f;  recD.z[2] = 0.1f; recD.z[3] = 0.05f;
+			draw::drawlines(&recD);
 		}
 	}
 	void move(car** cars, int n, int no) {
@@ -175,11 +226,11 @@ car* cars[2000];
 int totalnumber = 1;
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
+	parking::draw();
 	for (int i = 0; i < totalnumber; i++) {
 		cars[i]->display();
 		cars[i]->move(cars, totalnumber, i);
 	}
-	parking::draw();
 	glutSwapBuffers();
 	Sleep(10);
 }
