@@ -14,13 +14,18 @@ struct recData
 class draw {
 public:
 	static void drawlines(recData* data) {
-		glBegin(GL_LINES);
+		/*glBegin(GL_LINES);
 		for (int i = 0; i < data->number - 1; i++) {
 			glVertex2f(data->x[i], data->y[i]);
 			glVertex2f(data->x[i+1], data->y[i+1]);
 		}
 		glVertex2f(data->x[0], data->y[0]);
 		glVertex2f(data->x[data->number-1], data->y[data->number - 1]);
+		glEnd();*/
+		glBegin(GL_POLYGON);
+		for (int i = 0; i < data->number; i++) {
+			glVertex2f(data->x[i], data->y[i]);
+		}
 		glEnd();
 	}
 	static void transform(float x, float y, float angle, float orix, float oriy, float* truex, float* truey) {
@@ -100,7 +105,7 @@ public:
 				dy = cars[no]->y - cars[i]->y;
 				distance = sqrt(dx * dx + dy * dy);
 				if (distance < 0.3) {
-					if (reverse == 0)v += (0.3f - distance) / 10.0f / distance * (dx*cos(angle) + dy * sin(angle));
+					if (reverse == 0)v += (0.3f - distance) / 5.0f / distance * (dx*cos(angle) + dy * sin(angle));
 					//if (reverse == 1)v += (0.3f - distance) / 10.0f / distance * (dx*cos(angle) + dy * sin(angle));
 				}
 			}
