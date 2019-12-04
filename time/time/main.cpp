@@ -19,7 +19,7 @@ void display() {
 	Sleep(10);
 }
 float f(float x) {
-	return (sin(1 / x)*fabs(x));
+	return (sin(1 / x)*sqrt(fabs(x)));
 }
 void calculate(float* x, float*y, int* number, float begin, float end) {
 	float n = 5.0f;
