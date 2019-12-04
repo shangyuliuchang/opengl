@@ -9,6 +9,7 @@ struct recData
 {
 	int number;
 	float x[100], y[100];
+	float r, g, b;
 };
 
 class draw {
@@ -22,6 +23,7 @@ public:
 		glVertex2f(data->x[0], data->y[0]);
 		glVertex2f(data->x[data->number-1], data->y[data->number - 1]);
 		glEnd();*/
+		glColor4f(data->r, data->g, data->b, 1);
 		glBegin(GL_POLYGON);
 		for (int i = 0; i < data->number; i++) {
 			glVertex2f(data->x[i], data->y[i]);
@@ -36,6 +38,7 @@ public:
 class parking {
 public:
 	static void draw() {
+		glColor4f(1, 1, 1, 1);
 		glBegin(GL_LINES);
 		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
 			glVertex2f(x, -1.0f);
@@ -93,6 +96,7 @@ public:
 			for (int i = 0; i < 4; i++) {
 				draw::transform(x, y, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
 			}
+			recD.r = recD.g = recD.b = 1;
 			draw::drawlines(&recD);
 		}
 	}
@@ -129,7 +133,7 @@ public:
 			state = 2;
 		}
 
-		if (y > 5.0f) {
+		if (y > 50.0f) {
 			v = 0;
 		}
 
