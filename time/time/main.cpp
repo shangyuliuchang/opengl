@@ -86,7 +86,7 @@ public:
 			recData recD;
 			recD.number = 4;
 			for (int i = 0; i < 4; i++) {
-				draw::transform(x, y, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
+				draw::transform(x, y, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1) + length / 8.0f, width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
 			}
 			recD.r = recD.g = recD.b = 1;
 			draw::drawlines(&recD);
@@ -95,6 +95,9 @@ public:
 	void move(car** cars, int n, int no) {
 		float dx, dy, distance;
 		v = 0.005f;
+		if (reverse == 1) {
+			v *= -1;
+		}
 		for (int i = 0; i < n; i++) {
 			if (i != no) {
 				dx = cars[no]->x - cars[i]->x;
@@ -102,14 +105,16 @@ public:
 				distance = sqrt(dx * dx + dy * dy);
 				if (distance < 0.3) {
 					if (reverse == 0)v += (0.3f - distance) / 5.0f / distance * (dx*cos(angle) + dy * sin(angle));
-					//if (reverse == 1)v += (0.3f - distance) / 10.0f / distance * (dx*cos(angle) + dy * sin(angle));
 				}
 			}
 		}
 		if (v > 0.005f)v = 0.005f;
 		if (v < -0.005f)v = -0.005f;
 
-		if (dir == 0 && state == 0 && y > -0.5f && y < -0.49f) {
+		if (dir == 0 && state == 0 && y > -0.5f && y < -0.49f && reverse == 0) {
+			state = 2;
+		}
+		if (dir == 2 && state == 0 && y <= 0.5f && y >= 0.49f && reverse == 0) {
 			state = 2;
 		}
 		if (dir == 3 && state == 0 && x > 0.7f && x < 0.71f) {
@@ -118,10 +123,7 @@ public:
 		if (dir == 0 && state == 0 && y > 0.3f && y < 0.31f) {
 			state = 1;
 		}
-		if (dir == 1 && state == 0 && x<-0.7f && x>-0.71f) {
-			state = 2;
-		}
-		if (dir == 2 && state == 0 && y <= 0.5f && y >= 0.49f) {
+		if (dir == 1 && state == 0 && x < -0.7f && x > -0.71f) { 
 			state = 2;
 		}
 
@@ -129,49 +131,34 @@ public:
 			v = 0;
 		}
 
-		if (dir == 2 && state == 0 && y <= -0.8f) {
+		if (dir == 0 && state == 0 && y <= -0.8f && reverse == 1) {
 			v = 0;
-			reverse = 0;
 			if (out == 1) {
+				reverse = 0;
 				v = 0.005f;
 				dir = 0;
 				state = 0;
-				angle = PI / 2;
 			}
 		}
-		if (dir == 0 && state == 0 && y >= 0.8f && x > -0.6f) {
+		if (dir == 2 && state == 0 && y >= 0.8f && x > -0.6f && reverse == 1) {
 			v = 0;
-			reverse = 0;
 			if (out == 1) {
+				reverse = 0;
 				v = 0.005f;
 				dir = 2;
 				state = 0;
-				angle = 3.0f / 2.0f * PI;
 			}
 		}
 
-		if ((state == 1 || state == 2) && fabs((angle)-((dir - state * 2 + 4) % 4)*PI / 2) <= 0.1f) {
-			dir = (dir - state * 2 + 7) % 4;
+		if ((state == 1 || state == 2) && fabs((angle)-((dir - (state * 2 - 3)*(1 - reverse * 2) + 1) % 4)*PI / 2) <= 0.1f) {
+			dir = (dir - (state * 2 - 3)*(1 - reverse * 2) + 4) % 4;
 			state = 0;
 			angle = ((dir + 1) % 4)*PI / 2;
 		}
 
-		if (out == 0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f) {
-			dir = 1;
-			state = 1;
-			angle = (angle + PI);
-			if (angle >= 2 * PI) {
-				angle -= PI * 2;
-			}
-			reverse = 1;
-		}
-		if (out == 0 && position >= 6 && dir == 1 && state == 0 && x >= 0.39f - (position - 6) * 0.2f && x <= 0.4f - (position - 6) * 0.2f) {
-			dir = 3;
-			state = 1;
-			angle = (angle + PI);
-			if (angle >= 2 * PI) {
-				angle -= PI * 2;
-			}
+		if ((out == 0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f)||
+			(out == 0 && position >= 6 && dir == 1 && state == 0 && x >= 0.39f - (position - 6) * 0.2f && x <= 0.4f - (position - 6) * 0.2f)) {
+			state = 2;
 			reverse = 1;
 		}
 
@@ -184,9 +171,15 @@ public:
 		if (state == 1) {
 			angle += v * 10;
 		}
+		if (angle >= 2 * PI) {
+			angle -= 2 * PI;
+		}
+		if (angle < 0) {
+			angle += 2 * PI;
+		}
 	}
 };
-car* cars[200];
+car* cars[2000];
 int totalnumber = 1;
 void display(void) {
 	static float time = 0;
