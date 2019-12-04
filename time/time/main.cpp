@@ -252,7 +252,7 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
-	glutInitDisplayMode(GLUT_RGB|GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutCreateWindow("the Graph of Function!");
 	glutMouseFunc(&mousecallback);
 	glutPassiveMotionFunc(&mousemotion);
