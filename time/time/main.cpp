@@ -98,7 +98,7 @@ public:
 				dx = x_1 - x_2;
 				dy = y_1 - y_2;
 				distance = sqrt(dx * dx + dy * dy);
-				if (distance < 0.3) 
+				if (distance < 0.3)
 					if (reverse == 0) v += (0.3f - distance) / 5.0f / distance * (dx*cos(angle) + dy * sin(angle));
 			}
 		}
@@ -138,7 +138,7 @@ public:
 			angle = ((dir + 1) % 4)*PI / 2;
 		}
 
-		if ((out == 0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f)||
+		if ((out == 0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f) ||
 			(out == 0 && position >= 6 && dir == 1 && state == 0 && x >= 0.39f - (position - 6) * 0.2f && x <= 0.4f - (position - 6) * 0.2f)) {
 			state = 2;
 			reverse = 1;
@@ -173,7 +173,7 @@ void mousecallback(int a, int b, int c, int d) {
 	if (b == 1) {
 		no = (int)((mousex - 200) / 100);
 		if (mousey < 200) no = 11 - no;
-		else if(mousey>=200 && mousey<=800) no = -1;
+		else if (mousey >= 200 && mousey <= 800) no = -1;
 		if (no >= 0) {
 			if (occupation[no] == 0) {
 				occupation[no] = 1;
