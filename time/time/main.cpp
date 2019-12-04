@@ -15,14 +15,6 @@ struct recData
 class draw {
 public:
 	static void drawlines(recData* data) {
-		/*glBegin(GL_LINES);
-		for (int i = 0; i < data->number - 1; i++) {
-			glVertex2f(data->x[i], data->y[i]);
-			glVertex2f(data->x[i+1], data->y[i+1]);
-		}
-		glVertex2f(data->x[0], data->y[0]);
-		glVertex2f(data->x[data->number-1], data->y[data->number - 1]);
-		glEnd();*/
 		glColor4f(data->r, data->g, data->b, 1);
 		glBegin(GL_POLYGON);
 		for (int i = 0; i < data->number; i++) {
@@ -194,7 +186,7 @@ public:
 		}
 	}
 };
-car* cars[100];
+car* cars[200];
 int totalnumber = 1;
 void display(void) {
 	static float time = 0;
