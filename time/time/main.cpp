@@ -1,6 +1,7 @@
 #include<GL/freeglut.h>
 #include<math.h>
 #include<Windows.h>
+#include<iostream>
 
 #define PI 3.1415926535
 
@@ -48,12 +49,13 @@ public:
 		draw::drawlines(&cen);
 	}
 };
+int occupation[12];
 class car {
 public:
 	static car* cars[100];
 	float x, y, angle, type, v;
 	float width = 0.1, length = 0.2;
-	int dir, state, position, out;
+	int dir, state, position, out, reverse;
 	car(int type_) {
 		x = -0.8;
 		y = -1.1;
@@ -64,10 +66,16 @@ public:
 		state = 0;
 		position = 0;
 		out = 0;
+		reverse = 0;
 	}
 	static void generate(car** cars, int n) {
 		for (int i = 0; i < n; i++) {
 			cars[i] = new car(0);
+		}
+	}
+	static void deletecars(car** cars, int n) {
+		for (int i = 0; i < n; i++) {
+			delete cars[i];
 		}
 	}
 	void goout() {
@@ -83,9 +91,22 @@ public:
 			draw::drawlines(&recD);
 		}
 	}
-	void move() {
-		y += v * sin(angle);
-		x += v * cos(angle);
+	void move(car** cars, int n, int no) {
+		float dx, dy, distance;
+		v = 0.005f;
+		for (int i = 0; i < n; i++) {
+			if (i != no) {
+				dx = cars[no]->x - cars[i]->x;
+				dy = cars[no]->y - cars[i]->y;
+				distance = sqrt(dx * dx + dy * dy);
+				if (distance < 0.3) {
+					if (reverse == 0)v += (0.3f - distance) / 10.0f / distance * (dx*cos(angle) + dy * sin(angle));
+					//if (reverse == 1)v += (0.3f - distance) / 10.0f / distance * (dx*cos(angle) + dy * sin(angle));
+				}
+			}
+		}
+		if (v > 0.005f)v = 0.005f;
+		if (v < -0.005f)v = -0.005f;
 
 		if (dir == 0 && state == 0 && y > -0.5f && y < -0.49f) {
 			state = 2;
@@ -103,11 +124,13 @@ public:
 			state = 2;
 		}
 
-		if (y > 1.1f) {
+		if (y > 5.0f) {
 			v = 0;
 		}
+
 		if (dir == 2 && state == 0 && y <= -0.8f) {
 			v = 0;
+			reverse = 0;
 			if (out == 1) {
 				v = 0.005f;
 				dir = 0;
@@ -117,6 +140,7 @@ public:
 		}
 		if (dir == 0 && state == 0 && y >= 0.8f && x > -0.6f) {
 			v = 0;
+			reverse = 0;
 			if (out == 1) {
 				v = 0.005f;
 				dir = 2;
@@ -130,60 +154,99 @@ public:
 			state = 0;
 			angle = ((dir + 1) % 4)*PI / 2;
 		}
-		
-		if (state == 2) {
-			angle -= v * 10;
-		}
-		if (state == 1) {
-			angle += v * 10;
-		}
 
-		if (out==0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f) {
+		if (out == 0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f) {
 			dir = 1;
 			state = 1;
 			angle = (angle + PI);
 			if (angle >= 2 * PI) {
 				angle -= PI * 2;
 			}
+			reverse = 1;
 		}
-		if (out==0 && position >= 6 && dir == 1 && state == 0 && x >= 0.39f - (position - 6) * 0.2f && x <= 0.4f - (position - 6) * 0.2f) {
+		if (out == 0 && position >= 6 && dir == 1 && state == 0 && x >= 0.39f - (position - 6) * 0.2f && x <= 0.4f - (position - 6) * 0.2f) {
 			dir = 3;
 			state = 1;
 			angle = (angle + PI);
 			if (angle >= 2 * PI) {
 				angle -= PI * 2;
 			}
+			reverse = 1;
+		}
+
+		y += v * sin(angle);
+		x += v * cos(angle);
+
+		if (state == 2) {
+			angle -= v * 10;
+		}
+		if (state == 1) {
+			angle += v * 10;
 		}
 	}
 };
-
+car* cars[100];
+int totalnumber = 1;
 void display(void) {
 	static float time = 0;
-	static car* cars[12];
-	if (time == 0) {
-		car::generate(cars, 12);
-	}
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (int i = 0; i < time && i < 12; i++) {
-		cars[i]->position = i;
+	for (int i = 0; i < totalnumber; i++) {
 		cars[i]->display();
-		cars[i]->move();
-	}
-	for (int i = 0; i < time - 3 && i < 15; i++) {
-		cars[i]->goout();
+		cars[i]->move(cars, totalnumber, i);
 	}
 	parking::draw();
 	glutSwapBuffers();
 	Sleep(10);
 	time += 0.002;
 }
+int mousex, mousey;
+void mousecallback(int a, int b, int c, int d) {
+	int no;
+	if (b == 1) {
+		no = (int)((mousex - 200) / 100);
+		if (mousey < 200) {
+			no = 11 - no;
+		}
+		else if (mousey > 800) {
+
+		}
+		else {
+			no = -1;
+		}
+		if (no >= 0) {
+			if (occupation[no] == 0) {
+				occupation[no] = 1;
+				cars[totalnumber] = new car(0);
+				cars[totalnumber]->position = no;
+				totalnumber++;
+			}
+			else {
+				for (int i = 0; i < totalnumber; i++) {
+					if (cars[i]->position == no) {
+						cars[i]->goout();
+						occupation[no] = 0;
+					}
+				}
+			}
+		}
+	}
+
+}
+void mousemotion(int x, int y) {
+	mousex = x;
+	mousey = y;
+}
 
 int main(int argc, char *argv[]) {
+	cars[0] = new car(0);
+	occupation[0] = 1;
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
-	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGB|GLUT_DOUBLE);
 	glutCreateWindow("the Graph of Function!");
+	glutMouseFunc(&mousecallback);
+	glutPassiveMotionFunc(&mousemotion);
 	glClearColor(0, 0, 0, 1);
 	glutIdleFunc(&display);
 	glutMainLoop();
