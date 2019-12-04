@@ -8,7 +8,7 @@
 struct recData
 {
 	int number;
-	float x[100], y[100];
+	float x[100], y[100], z[100];
 	float r, g, b;
 };
 
@@ -18,7 +18,7 @@ public:
 		glColor4f(data->r, data->g, data->b, 1);
 		glBegin(GL_POLYGON);
 		for (int i = 0; i < data->number; i++)
-			glVertex2f(data->x[i], data->y[i]);
+			glVertex3f(data->x[i], data->y[i], data->z[i]);
 		glEnd();
 	}
 	static void transform(float x, float y, float ancx, float ancy, float angle, float orix, float oriy, float* truex, float* truey) {
@@ -29,7 +29,6 @@ public:
 class parking {
 public:
 	static void draw() {
-		glColor4f(1, 1, 1, 1);
 		glBegin(GL_LINES);
 		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
 			glVertex2f(x, -1.0f);
@@ -41,10 +40,13 @@ public:
 		}
 		glEnd();
 		recData cen;
+		cen.number = 4;
 		cen.x[0] = -0.6f; cen.y[0] = -0.2f;
 		cen.x[1] = 0.6f; cen.y[1] = -0.2f;
 		cen.x[2] = 0.6f; cen.y[2] = 0.2f;
 		cen.x[3] = -0.6f; cen.y[3] = 0.2f;
+		cen.g = cen.b = cen.r = 1;
+		cen.z[0] = cen.z[1] = cen.z[2] = cen.z[3] = 0;
 		draw::drawlines(&cen);
 	}
 };
@@ -80,10 +82,26 @@ public:
 		if (type == 0) {
 			recData recD;
 			recD.number = 4;
-			for (int i = 0; i < 4; i++)
-				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
 			recD.r = recD.g = recD.b = 1;
+			for (int i = 0; i < 4; i++) {
+				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
+				recD.z[i] = 0;
+			}
 			draw::drawlines(&recD);
+			for (int i = 0; i < 4; i++) {
+				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
+				recD.z[i] = 0.1f;
+			}
+			draw::drawlines(&recD);
+			for (int i = 0; i < 4; i++) {
+				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[0], &recD.y[0]);
+				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[1], &recD.y[1]);
+				draw::transform(x, y, 0, 0, angle, length / 2 * (((i + 1) % 4) == 0 || ((i + 1) % 4) == 3 ? 1 : -1), width / 2 * (((i + 1) % 4) < 2 ? 1 : -1), &recD.x[2], &recD.y[2]);
+				draw::transform(x, y, 0, 0, angle, length / 2 * (((i + 1) % 4) == 0 || ((i + 1) % 4) == 3 ? 1 : -1), width / 2 * (((i + 1) % 4) < 2 ? 1 : -1), &recD.x[3], &recD.y[3]);
+				recD.z[0] = recD.z[3] = 0;
+				recD.z[1] = recD.z[2] = 0.1f;
+				draw::drawlines(&recD);
+			}
 		}
 	}
 	void move(car** cars, int n, int no) {
@@ -173,7 +191,7 @@ void mousecallback(int a, int b, int c, int d) {
 	if (b == 1) {
 		no = (int)((mousex - 200) / 100);
 		if (mousey < 200) no = 11 - no;
-		else if (mousey >= 200 && mousey <= 800) no = -1;
+		if (mousey >= 200 && mousey <= 800 || mousey < 0 || mousey>1000 || mousex < 200 || mousex>800) no = -1;
 		if (no >= 0) {
 			if (occupation[no] == 0) {
 				occupation[no] = 1;
@@ -194,8 +212,10 @@ void mousecallback(int a, int b, int c, int d) {
 
 }
 void mousemotion(int x, int y) {
-	mousex = x;
-	mousey = y;
+	float t;
+	t = 1 / sqrt(24.0);
+	mousey = 0.5f * ((x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
+	mousex = -0.5f * (-1 * (x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
 }
 
 int main(int argc, char *argv[]) {
@@ -209,6 +229,7 @@ int main(int argc, char *argv[]) {
 	glutMouseFunc(&mousecallback);
 	glutPassiveMotionFunc(&mousemotion);
 	glClearColor(0, 0, 0, 1);
+	gluLookAt(-0.01, -0.01, 0.01, 0, 0, 0, 0, 0, 1);
 	glutIdleFunc(&display);
 	glutMainLoop();
 	return 0;
