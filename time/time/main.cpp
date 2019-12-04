@@ -50,6 +50,7 @@ public:
 };
 class car {
 public:
+	static car* cars[100];
 	float x, y, angle, type, v;
 	float width = 0.1, length = 0.2;
 	int dir, state, position, out;
@@ -63,6 +64,14 @@ public:
 		state = 0;
 		position = 0;
 		out = 0;
+	}
+	static void generate(car** cars, int n) {
+		for (int i = 0; i < n; i++) {
+			cars[i] = new car(0);
+		}
+	}
+	void goout() {
+		out = 1;
 	}
 	void display() {
 		if (type == 0) {
@@ -123,10 +132,10 @@ public:
 		}
 		
 		if (state == 2) {
-			angle -= 0.05f;
+			angle -= v * 10;
 		}
 		if (state == 1) {
-			angle += 0.05f;
+			angle += v * 10;
 		}
 
 		if (out==0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f) {
@@ -147,9 +156,13 @@ public:
 		}
 	}
 };
-car* cars[12];
+
 void display(void) {
 	static float time = 0;
+	static car* cars[12];
+	if (time == 0) {
+		car::generate(cars, 12);
+	}
 	glClear(GL_COLOR_BUFFER_BIT);
 	for (int i = 0; i < time && i < 12; i++) {
 		cars[i]->position = i;
@@ -157,7 +170,7 @@ void display(void) {
 		cars[i]->move();
 	}
 	for (int i = 0; i < time - 3 && i < 15; i++) {
-		cars[i]->out = 1;
+		cars[i]->goout();
 	}
 	parking::draw();
 	glutSwapBuffers();
@@ -166,9 +179,6 @@ void display(void) {
 }
 
 int main(int argc, char *argv[]) {
-	for (int i = 0; i < 12; i++) {
-		cars[i] = new car(0);
-	}
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
