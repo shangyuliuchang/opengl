@@ -141,7 +141,7 @@ public:
 			recD.z[0] = 0; recD.z[1] = 0;  recD.z[2] = -0.1f; recD.z[3] = -0.1f;
 			draw::drawlines(&recD);
 
-			recD.r = 0.2f; recD.g = 0.2f; recD.b = 0.2f;
+			recD.r = 0.1f; recD.g = 0.1f; recD.b = 0.1f;
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[0], &recD.y[0]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * 1, &recD.x[1], &recD.y[1]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * -1, &recD.x[2], &recD.y[2]);
