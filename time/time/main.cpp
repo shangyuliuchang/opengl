@@ -13,7 +13,14 @@ struct recData
 class draw {
 public:
 	static void drawlines(recData* data) {
-		glColor4f(data->r, data->g, data->b, 1);
+		GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };  //镜面反射参数
+		GLfloat mat_shininess[] = { 100 };               //高光指数
+		mat_specular[0] = data->r;
+		mat_specular[1] = data->g;
+		mat_specular[2] = data->b;
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_specular);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
 		glBegin(GL_POLYGON);
 		for (int i = 0; i < data->number; i++)
 			glVertex3f(data->x[i], data->y[i], data->z[i]);
@@ -27,23 +34,27 @@ public:
 class parking {
 public:
 	static void draw() {
-		glBegin(GL_LINES);
-		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
-			glVertex2f(x, -1.0f);
-			glVertex2f(x, -0.6f);
-		}
-		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
-			glVertex2f(x, 1.0f);
-			glVertex2f(x, 0.6f);
-		}
-		glEnd();
 		recData cen;
 		cen.number = 4;
+		cen.g = cen.b = cen.r = 1;
+		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
+			cen.x[0] = cen.x[1] = x - 0.01f;
+			cen.x[2] = cen.x[3] = x + 0.01;
+			cen.y[0] = cen.y[3] = -1.0f;
+			cen.y[1] = cen.y[2] = -0.6f;
+			draw::drawlines(&cen);
+		}
+		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
+			cen.x[0] = cen.x[1] = x - 0.01f;
+			cen.x[2] = cen.x[3] = x + 0.01;
+			cen.y[0] = cen.y[3] = 1.0f;
+			cen.y[1] = cen.y[2] = 0.6f;
+			draw::drawlines(&cen);
+		}
 		cen.x[0] = -0.6f; cen.y[0] = -0.2f;
 		cen.x[1] = 0.6f; cen.y[1] = -0.2f;
 		cen.x[2] = 0.6f; cen.y[2] = 0.2f;
 		cen.x[3] = -0.6f; cen.y[3] = 0.2f;
-		cen.g = cen.b = cen.r = 1;
 		cen.z[0] = cen.z[1] = cen.z[2] = cen.z[3] = 0;
 		draw::drawlines(&cen);
 	}
@@ -90,47 +101,52 @@ public:
 
 			for (int i = 0; i < 4; i++) {
 				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 0 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
-				recD.z[i] = 0.1f;
+				recD.z[i] = -0.1f;
 			}
 			draw::drawlines(&recD);
 
 			recD.number = 5;
+			recD.r = 1; recD.g = 0.8f; recD.b = 0.5f;
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[0], &recD.y[0]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[1], &recD.y[1]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[2], &recD.y[2]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[3], &recD.y[3]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * -1, &recD.x[4], &recD.y[4]);
-			recD.z[0] = 0.05f; recD.z[1] = 0;  recD.z[2] = 0; recD.z[3] = recD.z[4] = 0.1f;
+			recD.z[0] = -0.05f; recD.z[1] = 0;  recD.z[2] = 0; recD.z[3] = recD.z[4] = -0.1f;
 			draw::drawlines(&recD);
 
+			recD.r = 1; recD.g = 0.8f; recD.b = 0.5f;
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[0], &recD.y[0]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[1], &recD.y[1]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[2], &recD.y[2]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[3], &recD.y[3]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * 1, &recD.x[4], &recD.y[4]);
-			recD.z[0] = 0.05f; recD.z[1] = 0;  recD.z[2] = 0; recD.z[3] = recD.z[4] = 0.1f;
+			recD.z[0] = -0.05f; recD.z[1] = 0;  recD.z[2] = 0; recD.z[3] = recD.z[4] = -0.1f;
 			draw::drawlines(&recD);
 
 			recD.number = 4;
+			recD.r = 0.5f; recD.g = 0.5f; recD.b = 0.5f;
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[0], &recD.y[0]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[1], &recD.y[1]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[2], &recD.y[2]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[3], &recD.y[3]);
-			recD.z[0] = 0; recD.z[1] = 0;  recD.z[2] = 0.05f; recD.z[3] = 0.05f;
+			recD.z[0] = 0; recD.z[1] = 0;  recD.z[2] = -0.05f; recD.z[3] = -0.05f;
 			draw::drawlines(&recD);
 
+			recD.r = 0.5f; recD.g = 0.5f; recD.b = 0.5f;
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[0], &recD.y[0]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[1], &recD.y[1]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * -1, &recD.x[2], &recD.y[2]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * -1, width / 2 * 1, &recD.x[3], &recD.y[3]);
-			recD.z[0] = 0; recD.z[1] = 0;  recD.z[2] = 0.1f; recD.z[3] = 0.1f;
+			recD.z[0] = 0; recD.z[1] = 0;  recD.z[2] = -0.1f; recD.z[3] = -0.1f;
 			draw::drawlines(&recD);
 
+			recD.r = 0.2f; recD.g = 0.2f; recD.b = 0.2f;
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * 1, &recD.x[0], &recD.y[0]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * 1, &recD.x[1], &recD.y[1]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 0, width / 2 * -1, &recD.x[2], &recD.y[2]);
 			draw::transform(x, y, 0, 0, angle, length / 2 * 1, width / 2 * -1, &recD.x[3], &recD.y[3]);
-			recD.z[0] = 0.05f; recD.z[1] = 0.1f;  recD.z[2] = 0.1f; recD.z[3] = 0.05f;
+			recD.z[0] = -0.05f; recD.z[1] = -0.1f;  recD.z[2] = -0.1f; recD.z[3] = -0.05f;
 			draw::drawlines(&recD);
 		}
 	}
@@ -202,7 +218,7 @@ public:
 	}
 };
 void display(void) {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	parking::draw();
 	for (int i = 0; i < car::totalnumber; i++) {
 		car::cars[i]->display();
@@ -252,12 +268,26 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("the Graph of Function!");
 	glutMouseFunc(&mousecallback);
 	glutPassiveMotionFunc(&mousemotion);
 	glClearColor(0, 0, 0, 1);
-	gluLookAt(-0.01, -0.01, 0.01, 0, 0, 0, 0, 0, 1);
+	gluLookAt(0.01, 0.01, 0.01, 0, 0, 0, 0, 0, -1);
+
+	GLfloat light_position[] = { 0, 0, 0.2, 1.0 };
+	GLfloat white_light[] = { 1.0, 1.0, 1.0, 1.0 };   
+
+	glShadeModel(GL_SMOOTH);        
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light); 
+	glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);
+
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+
 	glutIdleFunc(&display);
 	glutMainLoop();
 	return 0;
