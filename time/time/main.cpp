@@ -4,14 +4,12 @@
 #include<iostream>
 
 #define PI 3.1415926535
-
 struct recData
 {
 	int number;
 	float x[100], y[100], z[100];
 	float r, g, b;
 };
-
 class draw {
 public:
 	static void drawlines(recData* data) {
@@ -53,7 +51,8 @@ public:
 int occupation[12];
 class car {
 public:
-	static car* cars[100];
+	static car* cars[2000];
+	static int totalnumber;
 	float x, y, angle, type, v;
 	float width = 0.1, length = 0.2;
 	int dir, state, position, out, reverse;
@@ -83,26 +82,6 @@ public:
 			recData recD;
 			recD.number = 4;
 			recD.r = recD.g = recD.b = 1;
-			/*
-			for (int i = 0; i < 4; i++) {
-				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
-				recD.z[i] = 0;
-			}
-			draw::drawlines(&recD);
-			for (int i = 0; i < 4; i++) {
-				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
-				recD.z[i] = 0.1f;
-			}
-			draw::drawlines(&recD);
-			for (int i = 0; i < 4; i++) {
-				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[0], &recD.y[0]);
-				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[1], &recD.y[1]);
-				draw::transform(x, y, 0, 0, angle, length / 2 * (((i + 1) % 4) == 0 || ((i + 1) % 4) == 3 ? 1 : -1), width / 2 * (((i + 1) % 4) < 2 ? 1 : -1), &recD.x[2], &recD.y[2]);
-				draw::transform(x, y, 0, 0, angle, length / 2 * (((i + 1) % 4) == 0 || ((i + 1) % 4) == 3 ? 1 : -1), width / 2 * (((i + 1) % 4) < 2 ? 1 : -1), &recD.x[3], &recD.y[3]);
-				recD.z[0] = recD.z[3] = 0;
-				recD.z[1] = recD.z[2] = 0.1f;
-				draw::drawlines(&recD);
-			}*/
 			for (int i = 0; i < 4; i++) {
 				draw::transform(x, y, 0, 0, angle, length / 2 * (i == 0 || i == 3 ? 1 : -1), width / 2 * (i < 2 ? 1 : -1), &recD.x[i], &recD.y[i]);
 				recD.z[i] = 0;
@@ -222,14 +201,12 @@ public:
 		if (angle < 0) angle += 2 * PI;
 	}
 };
-car* cars[2000];
-int totalnumber = 1;
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	parking::draw();
-	for (int i = 0; i < totalnumber; i++) {
-		cars[i]->display();
-		cars[i]->move(cars, totalnumber, i);
+	for (int i = 0; i < car::totalnumber; i++) {
+		car::cars[i]->display();
+		car::cars[i]->move(car::cars, car::totalnumber, i);
 	}
 	glutSwapBuffers();
 	Sleep(10);
@@ -244,14 +221,14 @@ void mousecallback(int a, int b, int c, int d) {
 		if (no >= 0) {
 			if (occupation[no] == 0) {
 				occupation[no] = 1;
-				cars[totalnumber] = new car(0);
-				cars[totalnumber]->position = no;
-				totalnumber++;
+				car::cars[car::totalnumber] = new car(0);
+				car::cars[car::totalnumber]->position = no;
+				car::totalnumber++;
 			}
 			else {
-				for (int i = 0; i < totalnumber; i++) {
-					if (cars[i]->position == no) {
-						cars[i]->goout();
+				for (int i = 0; i < car::totalnumber; i++) {
+					if (car::cars[i]->position == no) {
+						car::cars[i]->goout();
 						occupation[no] = 0;
 					}
 				}
@@ -266,10 +243,12 @@ void mousemotion(int x, int y) {
 	mousey = 0.5f * ((x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
 	mousex = -0.5f * (-1 * (x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
 }
-
+int car::totalnumber = 1;
+car* car::cars[2000];
 int main(int argc, char *argv[]) {
-	cars[0] = new car(0);
+	car::cars[0] = new car(0);
 	occupation[0] = 1;
+	car::totalnumber = 1;
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
