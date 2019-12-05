@@ -64,9 +64,9 @@ class car {
 public:
 	static car* cars[2000];
 	static int totalnumber;
-	float x, y, angle, type, v;
+	float x, y, angle, v;
 	float width = 0.1, length = 0.2;
-	int dir, state, position, out, reverse;
+	int dir, state, position, out, reverse, type;
 	car(int type_) {
 		x = -0.8;
 		y = -1.1;
@@ -89,7 +89,7 @@ public:
 		out = 1;
 	}
 	void display() {
-		if (type == 0) {
+		if (true) {
 			recData recD;
 			recD.number = 4;
 			recD.r = recD.g = recD.b = 1;
@@ -175,8 +175,6 @@ public:
 		if (dir == 0 && state == 0 && y > 0.3f && y < 0.31f) state = 1;
 		if (dir == 1 && state == 0 && x < -0.7f && x > -0.71f) state = 2;
 
-		if (y > 50.0f) v = 0;
-
 		if (dir == 0 && state == 0 && y <= -0.8f && reverse == 1) {
 			v = 0;
 			if (out == 1) {
@@ -220,11 +218,25 @@ public:
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	parking::draw();
+
 	for (int i = 0; i < car::totalnumber; i++) {
 		car::cars[i]->display();
 		car::cars[i]->move(car::cars, car::totalnumber, i);
 	}
 	glutSwapBuffers();
+
+	int j = 0;
+	while(j<car::totalnumber){
+		if (car::cars[j]->y > 1.1f) {
+			delete car::cars[j];
+			for (int i = j; i < car::totalnumber; i++) {
+				car::cars[i] = car::cars[i + 1];
+			}
+			car::totalnumber--;
+		}
+		else j++;
+	}
+
 	Sleep(10);
 }
 int mousex, mousey;
@@ -237,7 +249,7 @@ void mousecallback(int a, int b, int c, int d) {
 		if (no >= 0) {
 			if (occupation[no] == 0) {
 				occupation[no] = 1;
-				car::cars[car::totalnumber] = new car(0);
+				car::cars[car::totalnumber] = new car(car::totalnumber);
 				car::cars[car::totalnumber]->position = no;
 				car::totalnumber++;
 			}
@@ -259,12 +271,9 @@ void mousemotion(int x, int y) {
 	mousey = 0.5f * ((x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
 	mousex = -0.5f * (-1 * (x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
 }
-int car::totalnumber = 1;
+int car::totalnumber = 0;
 car* car::cars[2000];
 int main(int argc, char *argv[]) {
-	car::cars[0] = new car(0);
-	occupation[0] = 1;
-	car::totalnumber = 1;
 	glutInit(&argc, argv);
 	glutInitWindowSize(1000, 1000);
 	glutInitWindowPosition(0, 0);
