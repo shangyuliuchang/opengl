@@ -37,16 +37,16 @@ public:
 		recData cen;
 		cen.number = 4;
 		cen.g = cen.b = cen.r = 1;
-		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
+		for (float x = -0.6f; x <= 0.6f; x += 0.2f) {
 			cen.x[0] = cen.x[1] = x - 0.01f;
-			cen.x[2] = cen.x[3] = x + 0.01;
+			cen.x[2] = cen.x[3] = x + 0.01f;
 			cen.y[0] = cen.y[3] = -1.0f;
 			cen.y[1] = cen.y[2] = -0.6f;
 			draw::drawlines(&cen);
 		}
-		for (float x = -0.6f; x <= 0.6f; x += 0.2) {
+		for (float x = -0.6f; x <= 0.6f; x += 0.2f) {
 			cen.x[0] = cen.x[1] = x - 0.01f;
-			cen.x[2] = cen.x[3] = x + 0.01;
+			cen.x[2] = cen.x[3] = x + 0.01f;
 			cen.y[0] = cen.y[3] = 1.0f;
 			cen.y[1] = cen.y[2] = 0.6f;
 			draw::drawlines(&cen);
@@ -65,12 +65,12 @@ public:
 	static car* cars[2000];
 	static int totalnumber;
 	float x, y, angle, v;
-	float width = 0.1, length = 0.2;
+	float width = 0.1f, length = 0.2f;
 	int dir, state, position, out, reverse, type;
 	car(int type_) {
-		x = -0.8;
-		y = -1.1;
-		angle = PI / 2;
+		x = -0.8f;
+		y = -1.1f;
+		angle = (float)(PI / 2.0f);
 		type = type_;
 		v = 0.005f;
 		dir = 0;
@@ -197,7 +197,7 @@ public:
 		if ((state == 1 || state == 2) && fabs((angle)-((dir - (state * 2 - 3)*(1 - reverse * 2) + 1) % 4)*PI / 2) <= 0.1f) {
 			dir = (dir - (state * 2 - 3)*(1 - reverse * 2) + 4) % 4;
 			state = 0;
-			angle = ((dir + 1) % 4)*PI / 2;
+			angle = (float)(((dir + 1) % 4)*PI / 2.0f);
 		}
 
 		if ((out == 0 && position < 6 && dir == 3 && state == 0 && x >= -0.4f + position * 0.2f && x <= -0.39f + position * 0.2f) ||
@@ -211,8 +211,8 @@ public:
 
 		if (state == 2) angle -= v * 10;
 		if (state == 1) angle += v * 10;
-		if (angle >= 2 * PI) angle -= 2 * PI;
-		if (angle < 0) angle += 2 * PI;
+		if (angle >= 2 * PI) angle -= (float)(2.0f * PI);
+		if (angle < 0) angle += (float)(2.0f * PI);
 	}
 };
 void display(void) {
@@ -267,9 +267,9 @@ void mousecallback(int a, int b, int c, int d) {
 }
 void mousemotion(int x, int y) {
 	float t;
-	t = 1 / sqrt(24.0);
-	mousey = 0.5f * ((x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
-	mousex = -0.5f * (-1 * (x - 500) / (t*sqrt(3.0)) + (y - 500) / t) / 2.0f + 500.0f;
+	t = (float)(1 / sqrt(24.0));
+	mousey = (int)(0.5f * ((x - 500.0f) / (t*sqrt(3.0f)) + (y - 500.0f) / t) / 2.0f + 500.0f);
+	mousex = (int)(-0.5f * (-1.0f * (x - 500.0f) / (t*sqrt(3.0f)) + (y - 500.0f) / t) / 2.0f + 500.0f);
 }
 int car::totalnumber = 0;
 car* car::cars[2000];
@@ -284,8 +284,8 @@ int main(int argc, char *argv[]) {
 	glClearColor(0, 0, 0, 1);
 	gluLookAt(0.01, 0.01, 0.01, 0, 0, 0, 0, 0, -1);
 
-	GLfloat light_position[] = { 0, 0, 0.2, 1.0 };
-	GLfloat white_light[] = { 1.0, 1.0, 1.0, 1.0 };   
+	GLfloat light_position[] = { 0, 0, 0.2f, 1.0f };
+	GLfloat white_light[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	glShadeModel(GL_SMOOTH);        
 
